@@ -12,7 +12,6 @@
 // programadores donde cada equipo se encarga de una tarea específica. Usted forma parte del
 // equipo de programación que se encargará de hacer el módulo para los preventistas:
 
-
 // iv) Implemente una función que calcule el costo total de un producto. Esta función debe
 // recibir como parámetro el producto y devolver el resultado de calcular la Cantidad por
 // el PrecioUnitario.
@@ -38,6 +37,36 @@ struct Cliente
     struct Producto *Productos   // El tamaño de este arreglo depende de la variable
 };
 
+// Funciones
+
+float CalcularCostoProducto(struct Producto p)
+{
+    return p.Cantidad * p.PrecioUnitario;
+}
+
+void mostrarClientes(struct Cliente *clientes, int cantidadClientes)
+{
+    printf("\n--- CLIENTES ---");
+    for (int i = 0; i < cantidadClientes; i++)
+    {
+        printf("\n\nID: %d", clientes[i].ClienteID);
+        printf("\nNombre: %s", clientes[i].NombreCliente);
+        printf("\nCantidad de productos pedidos: %d", clientes[i].CantidadProductosAPedir);
+
+        float costoTotal = 0.0;
+
+        for (int j = 0; j < clientes[i].CantidadProductosAPedir; j++)
+        {
+            struct Producto productos = clientes[i].Productos[j];
+            float costo = CalcularCostoProducto(productos);
+            costoTotal += costo;
+
+            printf("\nProducto: %s, Cantidad: %d, Precio Unitario: %.2f", productos.TipoProducto, productos.Cantidad, productos.PrecioUnitario);
+        }
+
+        printf("\nEl costo total de %s es de $%.2f", clientes[i].NombreCliente ,costoTotal);
+    }
+}
 int main()
 {
     srand(time(NULL));
@@ -48,7 +77,7 @@ int main()
     scanf("%d", &cantidadClientes);
 
     // Control de cantidad de clientes
-    if (cantidadClientes < 1 && cantidadClientes > MAX_CLIENTES)
+    if (cantidadClientes < 1 || cantidadClientes > MAX_CLIENTES)
     {
         printf("\nCantidad de clientes incorrecta, los clientes deben estar entre 1 y 5.");
         return 1;
@@ -64,8 +93,8 @@ int main()
 
         // Nombre del cliente
         char buffer[100];
-        printf("\nIngrese el nombre del cliente: ");
-        gets(buffer);
+        printf("\nIngrese el nombre del cliente %d: ", i + 1);
+        scanf("%s", buffer);
         clientes[i].NombreCliente = (char *)malloc(strlen(buffer) + 1);
         strcpy(clientes[i].NombreCliente, buffer); // strcpy(destino, origen)
 
@@ -75,17 +104,17 @@ int main()
         // Arreglo dinámico de productos
         clientes[i].Productos = (struct Producto *)malloc(sizeof(struct Producto) * clientes[i].CantidadProductosAPedir);
 
-        for (int j = 0; i < clientes[i].CantidadProductosAPedir; j++)
+        for (int j = 0; j < clientes[i].CantidadProductosAPedir; j++)
         {
             clientes[i].Productos[j].ProductoID = j + 1;
             clientes[i].Productos[j].Cantidad = (rand() % 10) + 1;
-            int tipoIndex = (rand() % 5) + 1;
+            int tipoIndex = (rand() % 5);
             clientes[i].Productos[j].TipoProducto = TiposProductos[tipoIndex];
             clientes[i].Productos[j].PrecioUnitario = rand() % (100 - 10 + 1) + 10; // Valores especificos: rand() % (max - min + 1) + min
-
         }
-        
     }
+
+    mostrarClientes(clientes, cantidadClientes);
 
     return 0;
 }
